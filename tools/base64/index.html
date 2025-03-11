@@ -1,0 +1,77 @@
+<div class="tool-header">
+    <h1>Base64 Encoder/Decoder</h1>
+    <p>Encode and decode data in Base64 format. Useful for encoding binary data, images, handling authentication credentials, and testing data transmission.</p>
+</div>
+
+<div class="editor-layout">
+    <div class="editor-panel">
+        <div class="panel-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M4 4V20H20V4H4ZM2 2H22V22H2V2ZM13 11H16L12 7L8 11H11V13H8L12 17L16 13H13V11Z" />
+            </svg>
+            Input
+        </div>
+        <textarea id="base64-input" placeholder="Enter text to encode or decode..."></textarea>
+    </div>
+    <div class="editor-panel">
+        <div class="panel-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 22C6.47715 22 2 17.523 2 12C2 6.47715 6.47715 2 12 2C17.523 2 22 6.47715 22 12C22 17.523 17.523 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z" />
+            </svg>
+            Output
+        </div>
+        <textarea id="base64-output" placeholder="Results will appear here..." readonly></textarea>
+    </div>
+</div>
+
+<div class="base64-actions">
+    <div class="action-buttons">
+        <button id="base64-encode-button" class="action-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 4C3 3.44772 3.44772 3 4 3H20C20.5523 3 21 3.44772 21 4V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4ZM5 5V19H19V5H5ZM11 11H7V9H11V7L15 10.5L11 14V11Z" />
+            </svg>
+            Encode
+        </button>
+        <button id="base64-decode-button" class="action-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 4C3 3.44772 3.44772 3 4 3H20C20.5523 3 21 3.44772 21 4V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4ZM5 5V19H19V5H5ZM13 13H17V15H13V17L9 13.5L13 10V13Z" />
+            </svg>
+            Decode
+        </button>
+        <button id="base64-clear-button" class="action-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17 6H22V8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8H2V6H7V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V6ZM18 8H6V20H18V8ZM9 11H11V17H9V11ZM13 11H15V17H13V11ZM9 4V6H15V4H9Z" />
+            </svg>
+            Clear
+        </button>
+        <button id="base64-copy-button" class="action-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6.9998 6V3C6.9998 2.44772 7.44752 2 7.9998 2H19.9998C20.5521 2 20.9998 2.44772 20.9998 3V17C20.9998 17.5523 20.5521 18 19.9998 18H16.9998V21C16.9998 21.5523 16.5521 22 15.9998 22H3.9998C3.44752 22 2.9998 21.5523 2.9998 21V9C2.9998 8.44772 3.44752 8 3.9998 8H6.9998V6ZM4.9998 10V20H14.9998V10H4.9998ZM8.9998 6V16H14.9998V18H18.9998V4H8.9998V6Z" />
+            </svg>
+            Copy
+        </button>
+    </div>
+    <div class="encoding-options">
+        <label class="custom-checkbox">
+            <input type="checkbox" id="base64-url-safe">
+            <span class="checkmark"></span>
+            URL-safe encoding (replace + with - and / with _)
+        </label>
+        
+        <label class="custom-checkbox">
+            <input type="checkbox" id="base64-file-mode">
+            <span class="checkmark"></span>
+            File mode (upload/download instead of text)
+        </label>
+    </div>
+    
+    <div id="file-controls" class="file-controls" style="display: none;">
+        <input type="file" id="base64-file-input" class="file-input" />
+        <button id="base64-download-button" class="action-button" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13 10H18L12 16L6 10H11V3H13V10ZM4 19H20V12H22V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V12H4V19Z" />
+            </svg>
+            Download File
+        </button>
+    </div>
+</div>

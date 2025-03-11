@@ -1,0 +1,49 @@
+/* Base64 Encoder/Decoder specific styles */
+
+/* Actions container */
+.base64-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: 0 var(--space-5) var(--space-5) var(--space-5);
+}
+
+/* File controls area */
+.file-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+    align-items: center;
+}
+
+/* File input styling */
+.file-input {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: var(--space-2);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    flex: 1;
+}
+
+.file-input:hover {
+    border-color: var(--accent-blue);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .base64-actions .action-buttons,
+    .file-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .encoding-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+        margin: var(--space-2) 0;
+    }
+}

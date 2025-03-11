@@ -1,0 +1,62 @@
+<div class="tool-header">
+    <h1>JWT Editor</h1>
+    <p>Decode, edit and sign JWT tokens. Perfect for testing authentication vulnerabilities and crafting custom tokens.</p>
+</div>
+
+<div class="editor-layout">
+    <div class="editor-panel">
+        <div class="panel-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 22C6.477 22 2 17.523 2 12C2 6.477 6.477 2 12 2C17.523 2 22 6.477 22 12C22 17.523 17.523 22 12 22ZM8.5 9.5L3.5 12L8.5 14.5V17.5L0.999999 12L8.5 6.5V9.5ZM15.5 9.5L20.5 12L15.5 14.5V17.5L23 12L15.5 6.5V9.5Z" />
+            </svg>
+            JWT Token Input
+        </div>
+        <textarea id="jwt-input" placeholder="Paste your JWT token here..."></textarea>
+    </div>
+    <div class="editor-panel">
+        <div class="panel-title header-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11 5H5V19H11V5ZM13 5V19H19V5H13ZM3 3H21V21H3V3Z" />
+            </svg>
+            Header
+        </div>
+        <textarea id="header-output" placeholder="JWT header will appear here..."></textarea>
+    </div>
+    <div class="editor-panel">
+        <div class="panel-title payload-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 1L21.5 6.5V17.5L12 23L2.5 17.5V6.5L12 1ZM12 3.311L4.5 7.65311V16.3469L12 20.689L19.5 16.3469V7.65311L12 3.311ZM6.5 9.73832L11 7.08332V13.2383L6.5 15.8933V9.73832ZM13 7.08332L17.5 9.73832V15.8933L13 13.2383V7.08332Z" />
+            </svg>
+            Payload
+        </div>
+        <textarea id="payload-output" placeholder="JWT payload will appear here..."></textarea>
+    </div>
+    <div class="editor-panel">
+        <div class="panel-title signature-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17 18V20H7V18H17ZM17 14V16H7V14H17ZM14 10V12H7V10H14ZM21.0001 3.5L15.5001 9L12.5001 6L13.9101 4.58L15.5001 6.17L19.5801 2.09L21.0001 3.5Z" />
+            </svg>
+            Secret Key
+        </div>
+        <textarea id="signature-output" placeholder="Enter your secret key to verify or generate a signature..."></textarea>
+        <div class="panel-help">Enter your secret key in plain text. The signature type will be determined by the 'alg' field in the token header (e.g. HS256).</div>
+    </div>
+</div>
+
+<div class="output-section">
+    <div class="output-header">
+        <div class="output-label">
+            Output JWT Token
+            <div id="token-status" class="token-status">
+                <!-- Status icon will be inserted here -->
+            </div>
+        </div>
+        <button id="copy-button" class="copy-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6.9998 6V3C6.9998 2.44772 7.44752 2 7.9998 2H19.9998C20.5521 2 20.9998 2.44772 20.9998 3V17C20.9998 17.5523 20.5521 18 19.9998 18H16.9998V21C16.9998 21.5523 16.5521 22 15.9998 22H3.9998C3.44752 22 2.9998 21.5523 2.9998 21V9C2.9998 8.44772 3.44752 8 3.9998 8H6.9998V6ZM4.9998 10V20H14.9998V10H4.9998ZM8.9998 6V16H14.9998V18H18.9998V4H8.9998V6Z" />
+            </svg>
+            Copy
+        </button>
+    </div>
+    <div id="jwt-output" class="jwt-output"></div>
+</div>

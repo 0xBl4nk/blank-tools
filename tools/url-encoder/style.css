@@ -1,0 +1,32 @@
+/* URL Encoder/Decoder specific styles */
+
+/* URL actions container */
+.url-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: 0 var(--space-5) var(--space-5) var(--space-5);
+}
+
+/* Options area for URL encoder */
+.encoding-options {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Responsive adjustments for URL encoder */
+@media (max-width: 768px) {
+    .url-actions .action-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .encoding-options {
+        justify-content: center;
+        text-align: center;
+        margin-top: var(--space-2);
+    }
+}

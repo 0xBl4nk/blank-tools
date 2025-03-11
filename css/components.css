@@ -1,0 +1,209 @@
+/* Common Components */
+
+/* Panels */
+.editor-layout {
+    display: flex;
+    gap: var(--space-5);
+    height: 100%;
+    min-height: 400px;
+    padding: var(--space-5);
+}
+
+.editor-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: var(--space-4);
+    transition: border-color var(--transition-normal);
+}
+
+.editor-panel:hover {
+    border-color: var(--accent-blue);
+}
+
+.panel-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+.panel-title svg {
+    width: 16px;
+    height: 16px;
+}
+
+.panel-help {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-top: var(--space-2);
+}
+
+/* Form elements */
+textarea {
+    flex: 1;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    padding: var(--space-3);
+    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    resize: none;
+    transition: border-color var(--transition-normal);
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+
+textarea[readonly] {
+    opacity: 0.8;
+    cursor: default;
+}
+
+/* Buttons */
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--button-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.action-button:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.action-button:active {
+    background-color: var(--accent-blue);
+    color: white;
+}
+
+.action-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.copy-button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--button-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.copy-button:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.copy-button svg {
+    width: 14px;
+    height: 14px;
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+/* Custom checkbox */
+.custom-checkbox {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: relative;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: all var(--transition-normal);
+}
+
+.custom-checkbox:hover .checkmark {
+    border-color: var(--accent-blue);
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+    background-color: var(--accent-blue);
+    border-color: var(--accent-blue);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 4px;
+    height: 9px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Tool transitions */
+.tool-content {
+    transition: opacity var(--transition-normal);
+}
+
+.tool-content.hidden {
+    display: none;
+    opacity: 0;
+}
+
+.tool-content.visible {
+    display: block;
+    opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .editor-layout {
+        flex-direction: column;
+    }
+}

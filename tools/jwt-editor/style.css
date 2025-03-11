@@ -1,0 +1,94 @@
+/* JWT Editor specific styles */
+
+/* Color variables for JWT components */
+:root {
+    --header-color: #ff0080;
+    --payload-color: #0070f3;
+    --signature-color: #50e3c2;
+}
+
+/* JWT panel titles */
+.header-title {
+    color: var(--header-color);
+}
+
+.payload-title {
+    color: var(--payload-color);
+}
+
+.signature-title {
+    color: var(--signature-color);
+}
+
+/* JWT output section */
+.output-section {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: var(--space-4);
+    margin: 0 var(--space-5) var(--space-5) var(--space-5);
+}
+
+.output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-3);
+}
+
+.output-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.jwt-output {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    padding: var(--space-3);
+    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    min-height: 80px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+/* JWT token colors */
+.header-part {
+    color: var(--header-color);
+}
+
+.payload-part {
+    color: var(--payload-color);
+}
+
+.signature-part {
+    color: var(--signature-color);
+}
+
+/* Verification status indicator */
+.token-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.token-status.valid {
+    background-color: rgba(0, 200, 83, 0.2);
+    color: #00C853;
+}
+
+.token-status.invalid {
+    background-color: rgba(255, 23, 68, 0.2);
+    color: #FF1744;
+}
