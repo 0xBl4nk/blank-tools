@@ -85,7 +85,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create and add new script
         const script = document.createElement('script');
         script.src = `tools/${toolId}/script.js`;
+        script.type = "module";
         script.setAttribute('data-tool-js', toolId);
+
+        // script.onload = () => {
+        //     script.type = 'module';
+        // }
         document.body.appendChild(script);
     }
 });
