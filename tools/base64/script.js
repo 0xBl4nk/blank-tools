@@ -1,6 +1,7 @@
 // Base64 Encoder/Decoder functionality
+// Immediately-invoked function expression to create encapsulated scope
 (function() {
-    // DOM Elements
+    // DOM Elements - safely check for existence before accessing them
     const base64Input = document.getElementById('base64-input');
     const base64Output = document.getElementById('base64-output');
     const encodeButton = document.getElementById('base64-encode-button');
@@ -8,6 +9,12 @@
     const clearButton = document.getElementById('base64-clear-button');
     const copyButton = document.getElementById('base64-copy-button');
     const urlSafeCheckbox = document.getElementById('base64-url-safe');
+    
+    // Guard clause - don't proceed if we're not on the base64 page
+    if (!base64Input || !base64Output || !encodeButton || !decodeButton) {
+        console.log('Base64 tool elements not found, not initializing');
+        return;
+    }
     
     // Base64 encode function
     function encodeBase64(input, urlSafe = false) {
@@ -55,28 +62,25 @@
         }
     }
     
-    // Encode button click handler
-    encodeButton.addEventListener('click', () => {
+    // Event handler functions
+    function handleEncode() {
         const input = base64Input.value;
         const urlSafe = urlSafeCheckbox.checked;
         base64Output.value = encodeBase64(input, urlSafe);
-    });
+    }
     
-    // Decode button click handler
-    decodeButton.addEventListener('click', () => {
+    function handleDecode() {
         const input = base64Input.value;
         const urlSafe = urlSafeCheckbox.checked;
         base64Output.value = decodeBase64(input, urlSafe);
-    });
+    }
     
-    // Clear button click handler
-    clearButton.addEventListener('click', () => {
+    function handleClear() {
         base64Input.value = '';
         base64Output.value = '';
-    });
+    }
     
-    // Copy button click handler
-    copyButton.addEventListener('click', () => {
+    function handleCopy() {
         if (!base64Output.value) return;
         
         navigator.clipboard.writeText(base64Output.value).then(() => {
@@ -91,5 +95,26 @@
                 copyButton.innerHTML = originalText;
             }, 2000);
         });
-    });
+    }
+    
+    // Add event listeners
+    encodeButton.addEventListener('click', handleEncode);
+    decodeButton.addEventListener('click', handleDecode);
+    clearButton.addEventListener('click', handleClear);
+    copyButton.addEventListener('click', handleCopy);
+    
+    // Register cleanup function
+    if (window.registerToolCleanup) {
+        window.registerToolCleanup(function() {
+            console.log('Cleaning up Base64 tool...');
+            
+            // Remove all event listeners
+            if (encodeButton) encodeButton.removeEventListener('click', handleEncode);
+            if (decodeButton) decodeButton.removeEventListener('click', handleDecode);
+            if (clearButton) clearButton.removeEventListener('click', handleClear);
+            if (copyButton) copyButton.removeEventListener('click', handleCopy);
+        });
+    }
+    
+    console.log('Base64 tool initialized successfully');
 })();

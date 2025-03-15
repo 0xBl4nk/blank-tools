@@ -1,10 +1,11 @@
-// Main navigation and tool loading
+// Main navigation and tool loading with strong isolation
 document.addEventListener('DOMContentLoaded', function() {
     const toolItems = document.querySelectorAll('.tool-item');
     const toolContainer = document.getElementById('tool-container');
     
     // Current active tool
     let currentTool = 'jwt-editor'; // Default tool
+    let activeToolFrame = null;
     
     // Load the default tool on page load
     loadTool(currentTool);
@@ -25,19 +26,68 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Function to load a tool
+    // Function to load a tool using iframe isolation
     function loadTool(toolId) {
+        console.log(`Loading tool: ${toolId}`);
+        
+        // Remove any existing tool frames
+        if (activeToolFrame) {
+            activeToolFrame.remove();
+            activeToolFrame = null;
+        }
+        
+        // Update the current tool
         currentTool = toolId;
         
-        // Load HTML content
-        fetchToolHTML(toolId).then(html => {
-            toolContainer.innerHTML = html;
+        // Create an iframe for complete isolation
+        const iframe = document.createElement('iframe');
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        iframe.title = `${toolId} tool`;
+        iframe.id = `tool-frame-${toolId}`;
+        
+        // Add the iframe to the container
+        toolContainer.innerHTML = '';
+        toolContainer.appendChild(iframe);
+        activeToolFrame = iframe;
+        
+        // Construct HTML content with all necessary resources
+        fetchToolResources(toolId).then(resources => {
+            const { html, css, script } = resources;
             
-            // Load CSS
-            loadCSS(toolId);
+            // Create a complete HTML document for the iframe
+            const iframeContent = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>${toolId}</title>
+                    <link rel="stylesheet" href="/css/main.css">
+                    <link rel="stylesheet" href="/css/components.css">
+                    <style>${css}</style>
+                </head>
+                <body>
+                    <div class="tool-container">
+                        ${html}
+                    </div>
+                    <script>
+                        // Isolated tool script
+                        ${script}
+                    </script>
+                </body>
+                </html>
+            `;
             
-            // Load JavaScript after HTML is loaded
-            loadJS(toolId);
+            // Set the iframe content
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(iframeContent);
+            iframeDoc.close();
+            
+            // Handle copy button functionality which requires access to parent document
+            iframe.contentWindow.navigator.clipboard = navigator.clipboard;
         }).catch(error => {
             console.error(`Error loading tool ${toolId}:`, error);
             toolContainer.innerHTML = `
@@ -49,48 +99,61 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Function to fetch tool HTML
-    async function fetchToolHTML(toolId) {
-        const response = await fetch(`tools/${toolId}/index.html`);
-        if (!response.ok) {
-            throw new Error(`Failed to load HTML for tool ${toolId}`);
+    // Function to fetch all tool resources (HTML, CSS, JS)
+    async function fetchToolResources(toolId) {
+        try {
+            // Fetch HTML
+            const htmlResponse = await fetch(`/tools/${toolId}/index.html`);
+            if (!htmlResponse.ok) throw new Error(`Failed to load HTML for tool ${toolId}`);
+            const html = await htmlResponse.text();
+            
+            // Fetch CSS
+            const cssResponse = await fetch(`/tools/${toolId}/style.css`);
+            let css = '';
+            if (cssResponse.ok) {
+                css = await cssResponse.text();
+            }
+            
+            // Fetch JavaScript - handle module scripts separately
+            const scriptResponse = await fetch(`/tools/${toolId}/script.js`);
+            let script = '';
+            if (scriptResponse.ok) {
+                script = await scriptResponse.text();
+                
+                // For JWT editor, also fetch and inline the module dependencies
+                if (toolId === 'jwt-editor') {
+                    try {
+                        const jwtUtilsResponse = await fetch(`/tools/${toolId}/scripts/jwtUtils.js`);
+                        const jwtEditorResponse = await fetch(`/tools/${toolId}/scripts/jwtEditor.js`);
+                        
+                        if (jwtUtilsResponse.ok && jwtEditorResponse.ok) {
+                            const jwtUtils = await jwtUtilsResponse.text();
+                            const jwtEditor = await jwtEditorResponse.text();
+                            
+                            // Replace imports with actual code (simplified approach)
+                            script = `
+                                // Inlined JWT Utils
+                                ${jwtUtils.replace('export function', 'function')}
+                                
+                                // Inlined JWT Editor
+                                ${jwtEditor.replace('import {', '// import {')}
+                                
+                                // Initialize JWT Editor
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    jwtEditor();
+                                });
+                            `;
+                        }
+                    } catch (e) {
+                        console.error('Error fetching JWT modules:', e);
+                    }
+                }
+            }
+            
+            return { html, css, script };
+        } catch (error) {
+            console.error('Error fetching tool resources:', error);
+            throw error;
         }
-        return await response.text();
-    }
-    
-    // Function to load tool-specific CSS
-    function loadCSS(toolId) {
-        // Remove any previously loaded tool CSS
-        const existingCSS = document.querySelector(`link[data-tool-css="${toolId}"]`);
-        if (existingCSS) {
-            existingCSS.remove();
-        }
-        
-        // Create and add new CSS link
-        const cssLink = document.createElement('link');
-        cssLink.rel = 'stylesheet';
-        cssLink.href = `tools/${toolId}/style.css`;
-        cssLink.setAttribute('data-tool-css', toolId);
-        document.head.appendChild(cssLink);
-    }
-    
-    // Function to load tool-specific JavaScript
-    function loadJS(toolId) {
-        // Remove any previously loaded tool JS
-        const existingJS = document.querySelector(`script[data-tool-js="${toolId}"]`);
-        if (existingJS) {
-            existingJS.remove();
-        }
-        
-        // Create and add new script
-        const script = document.createElement('script');
-        script.src = `tools/${toolId}/script.js`;
-        script.type = "module";
-        script.setAttribute('data-tool-js', toolId);
-
-        // script.onload = () => {
-        //     script.type = 'module';
-        // }
-        document.body.appendChild(script);
     }
 });

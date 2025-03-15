@@ -1,7 +1,7 @@
 // jwtUtils.js
 
 // Helper function to convert ArrayBuffer to base64url
-export function arrayBufferToBase64Url(buffer) {
+function arrayBufferToBase64Url(buffer) {
    const bytes = new Uint8Array(buffer);
    let binary = '';
    for (let i = 0; i < bytes.byteLength; i++) {
@@ -14,7 +14,7 @@ export function arrayBufferToBase64Url(buffer) {
 }
 
 // Function to decode base64url to text
-export function base64UrlDecode(input) {
+function base64UrlDecode(input) {
    input = input.replace(/-/g, '+').replace(/_/g, '/');
    switch (input.length % 4) {
        case 0:
@@ -37,14 +37,14 @@ export function base64UrlDecode(input) {
 }
 
 // Function to encode text to base64url
-export function base64UrlEncode(input) {
+function base64UrlEncode(input) {
    const bytes = new TextEncoder().encode(input);
    let base64 = btoa(String.fromCharCode.apply(null, bytes));
    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 // Function to validate JWT signature
-export async function verifyJwt(token, secretKey) {
+async function verifyJwt(token, secretKey) {
    try {
        if (!token || !secretKey) return false;
        const parts = token.split('.');
@@ -93,7 +93,7 @@ export async function verifyJwt(token, secretKey) {
 }
 
 // Function to sign JWT with the appropriate algorithm
-export async function signJwt(headerBase64, payloadBase64, secretKey) {
+async function signJwt(headerBase64, payloadBase64, secretKey) {
    try {
        const headerJson = base64UrlDecode(headerBase64);
        const header = JSON.parse(headerJson);
