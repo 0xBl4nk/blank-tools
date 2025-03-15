@@ -1,4 +1,4 @@
-// Main navigation and tool loading with strong isolation
+// Main navigation and tool loading with strong isolation and proper cleanup
 document.addEventListener('DOMContentLoaded', function() {
     const toolItems = document.querySelectorAll('.tool-item');
     const toolContainer = document.getElementById('tool-container');
@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Current active tool
     let currentTool = 'jwt-editor'; // Default tool
     let activeToolFrame = null;
+    let cleanupFunctions = new Map(); // Store cleanup functions for each tool
     
     // Load the default tool on page load
     loadTool(currentTool);
@@ -29,6 +30,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to load a tool using iframe isolation
     function loadTool(toolId) {
         console.log(`Loading tool: ${toolId}`);
+        
+        // Run cleanup for the previous tool if it exists
+        if (currentTool && cleanupFunctions.has(currentTool)) {
+            try {
+                cleanupFunctions.get(currentTool)();
+                console.log(`Cleaned up resources for: ${currentTool}`);
+            } catch (e) {
+                console.error(`Error during cleanup for ${currentTool}:`, e);
+            }
+        }
         
         // Remove any existing tool frames
         if (activeToolFrame) {
@@ -56,7 +67,13 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchToolResources(toolId).then(resources => {
             const { html, css, script } = resources;
             
-            // Create a complete HTML document for the iframe
+            // Preload CSS by creating a link element in the parent document
+            const styleLink = document.createElement('link');
+            styleLink.rel = 'stylesheet';
+            styleLink.href = `/tools/${toolId}/style.css`;
+            document.head.appendChild(styleLink);
+            
+            // Create a complete HTML document for the iframe with CSS loaded via link
             const iframeContent = `
                 <!DOCTYPE html>
                 <html lang="en">
@@ -66,13 +83,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     <title>${toolId}</title>
                     <link rel="stylesheet" href="/css/main.css">
                     <link rel="stylesheet" href="/css/components.css">
-                    <style>${css}</style>
+                    <link rel="stylesheet" href="/tools/${toolId}/style.css">
+                    <!-- Fallback inline styles in case the link fails to load -->
+                    <style>
+                        ${css}
+                    </style>
                 </head>
                 <body>
                     <div class="tool-container">
                         ${html}
                     </div>
                     <script>
+                        // Tool cleanup registration
+                        window.cleanupFunctions = [];
+                        window.registerToolCleanup = function(cleanupFn) {
+                            if (typeof cleanupFn === 'function') {
+                                window.cleanupFunctions.push(cleanupFn);
+                            }
+                        };
+                        
                         // Isolated tool script
                         ${script}
                     </script>
@@ -88,6 +117,34 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Handle copy button functionality which requires access to parent document
             iframe.contentWindow.navigator.clipboard = navigator.clipboard;
+            
+            // Register a master cleanup function for this tool
+            cleanupFunctions.set(toolId, function() {
+                // Execute all registered cleanup functions for this tool
+                if (iframe.contentWindow && iframe.contentWindow.cleanupFunctions) {
+                    iframe.contentWindow.cleanupFunctions.forEach(fn => {
+                        try {
+                            fn();
+                        } catch (e) {
+                            console.error('Error in cleanup function:', e);
+                        }
+                    });
+                }
+                
+                // Remove the preloaded style link from the parent document
+                if (styleLink && styleLink.parentNode) {
+                    styleLink.parentNode.removeChild(styleLink);
+                }
+                
+                // Clear references to potentially leak-causing objects
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.onunload = null;
+                    iframe.contentWindow.onload = null;
+                    iframe.onload = null;
+                    iframe.contentWindow.document.body.innerHTML = '';
+                }
+            });
+            
         }).catch(error => {
             console.error(`Error loading tool ${toolId}:`, error);
             toolContainer.innerHTML = `
@@ -124,25 +181,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (toolId === 'jwt-editor') {
                     try {
                         const jwtUtilsResponse = await fetch(`/tools/${toolId}/scripts/jwtUtils.js`);
-                        const jwtEditorResponse = await fetch(`/tools/${toolId}/scripts/jwtEditor.js`);
-                        
-                        if (jwtUtilsResponse.ok && jwtEditorResponse.ok) {
+                        if (jwtUtilsResponse.ok) {
                             const jwtUtils = await jwtUtilsResponse.text();
+                            script = jwtUtils + "\n" + script;
+                        }
+                        
+                        const jwtEditorResponse = await fetch(`/tools/${toolId}/scripts/jwtEditor.js`);
+                        if (jwtEditorResponse.ok) {
                             const jwtEditor = await jwtEditorResponse.text();
-                            
-                            // Replace imports with actual code (simplified approach)
-                            script = `
-                                // Inlined JWT Utils
-                                ${jwtUtils.replace('export function', 'function')}
-                                
-                                // Inlined JWT Editor
-                                ${jwtEditor.replace('import {', '// import {')}
-                                
-                                // Initialize JWT Editor
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    jwtEditor();
-                                });
-                            `;
+                            // Add initialization code at the end
+                            script = script + "\n" + jwtEditor + "\n" + 
+                                "// Initialize JWT Editor\n" +
+                                "document.addEventListener('DOMContentLoaded', function() {\n" +
+                                "    jwtEditor();\n" +
+                                "});\n";
                         }
                     } catch (e) {
                         console.error('Error fetching JWT modules:', e);
@@ -156,4 +208,16 @@ document.addEventListener('DOMContentLoaded', function() {
             throw error;
         }
     }
+    
+    // Clean up everything when the page is unloaded
+    window.addEventListener('beforeunload', function() {
+        cleanupFunctions.forEach((cleanup, toolId) => {
+            try {
+                cleanup();
+                console.log(`Cleaned up resources for: ${toolId}`);
+            } catch (e) {
+                console.error(`Error during cleanup for ${toolId}:`, e);
+            }
+        });
+    });
 });
